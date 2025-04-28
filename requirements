@@ -1,2 +1,5 @@
 gradio
 transformers
+re (já vem no python)
+
+Obs: se rodar no colab não é necessário instalar, mas caso seja, você usa "!pip install" 
