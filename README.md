@@ -11,3 +11,8 @@ Projeto desenvolvido para resumir textos em inglês utilizando o modelo pré-tre
 
 # Instruções de Instalação/Configuração
 Basta realizar um login no google colab e colocar o código em um notebook e executar.
+E você precisa gerar seu token no Hugging Face para colocar no código, na parte "seu_token".
+
+# Autores
+Isabelly Constantino Pagels - 28917529
+Julya da Mota Piva - 30173701
