@@ -1,0 +1,52 @@
+# Importa as bibliotecas necessárias
+import gradio as gr
+from transformers import pipeline
+import re
+
+# Token Hugging Face para autenticação no modelo
+hf_token = "seu_token" # não esquecer de preencher com seu token gerado 
+
+# Carrega o modelo de sumarização BART-large-cnn
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn", token=hf_token)
+
+# Função para limpar o texto (remove rodapés, espaçamentos desnecessários, etc.)
+def limpar_texto(texto):
+    texto_limpo = re.sub(r"(Back\s+to\s+.*?)+", "", texto, flags=re.IGNORECASE)
+    texto_limpo = re.sub(r"\s{2,}", " ", texto_limpo)
+    return texto_limpo.strip()
+
+# Função para contar o número de palavras
+def contar_palavras(texto):
+    return len(texto.split())
+
+# Função principal de resumo
+def resumir_texto(texto):
+    if not texto.strip():
+        return "Por favor, insira um texto válido.", "", ""
+    
+    # Limpa o texto
+    texto_limpo = limpar_texto(texto)
+    palavras_original = contar_palavras(texto_limpo)
+
+    # Realiza a sumarização
+    resultado = summarizer(texto_limpo, max_length=300, min_length=150, do_sample=False)
+    resumo = resultado[0]['summary_text']
+    palavras_resumo = contar_palavras(resumo)
+
+    return f"{palavras_original} palavras", f"{palavras_resumo} palavras", resumo
+
+# Criação da interface gráfica com Gradio
+interface = gr.Interface(
+    fn=resumir_texto,
+    inputs=gr.Textbox(lines=10, placeholder="Digite ou cole aqui o texto que deseja resumir..."),
+    outputs=[
+        gr.Textbox(label="📄 Palavras no texto original"),
+        gr.Textbox(label="📝 Palavras no resumo"),
+        gr.Textbox(label="📌 Resumo gerado"),
+    ],
+    title="Resumidor de Textos em inglês 📝",
+    description="Cole um texto e veja o resumo junto com a contagem de palavras! (Limite recomendado: até 850 palavras)",
+)
+
+# Lança a interface
+interface.launch()
